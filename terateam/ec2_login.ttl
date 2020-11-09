@@ -1,0 +1,72 @@
+;; sample macro of Tera Term
+
+;; File: ec2_login.ttl
+;; Description: auto login with SSH2 protocol
+;; Environment: generic
+;; Update: 2019/6/11
+;; Author: [Add Name]
+
+;========================================
+;; ログイン変数設定
+
+;; 設定ファイル
+INI_FILE = "C:\Program Files (x86)\teraterm\TERATERM_AWS.INI"
+
+;; ログ出力先
+LOG_FILE = "[log path]\teraterm\Log"
+
+;========================================
+
+INPUT_MSG = " 1：server1\n 2：server2"
+strspecial INPUT_MSG
+
+:EC_TYPE_Input
+inputbox INPUT_MSG 'EC2 Login'
+str2int EC_TYPE inputstr
+
+if EC_TYPE == 1 then
+  USERNAME = 'ec2-user'
+  IPADDR = '[Fix]'
+  HOSTNAME = '[Fix]'
+
+  ;; キーファイルパス
+  SSH_KEY = '[key path]\xxx.pem'
+
+elseif EC_TYPE == 2 then
+  USERNAME = '[Fix]'
+  IPADDR = '[Fix]'
+  HOSTNAME = '[Fix]'
+
+  ;; キーファイルパス
+  SSH_KEY = '[key path]\xxx.pem'
+
+else
+  messagebox '表示されている番号を選択してください' EC_TYPE
+  end
+endif
+
+;; コマンド組み立て
+COMMAND = IPADDR
+strconcat COMMAND ':22 /ssh /2 /auth=publickey /user='
+strconcat COMMAND USERNAME
+strconcat COMMAND ' /keyfile="'
+strconcat COMMAND SSH_KEY
+strconcat COMMAND '"'
+strconcat COMMAND ' /F="'
+strconcat COMMAND INI_FILE
+strconcat COMMAND '"'
+
+;; 接続
+connect COMMAND
+
+;; ログ出力
+getdate LOG_DATE "_%Y%m%d-%H%M%S.log"
+strconcat LOG_FILE HOSTNAME
+strconcat LOG_FILE "_"
+strconcat LOG_FILE USERNAME
+strconcat LOG_FILE LOG_DATE
+logopen LOG_FILE 0 1 0 1
+
+;; マクロ終了
+end
+
